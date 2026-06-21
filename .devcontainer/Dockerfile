@@ -4,7 +4,7 @@
 # (Sin Kubernetes/Helm/Flux: este curso usa AWS como provider de referencia.)
 # ------------------------------------------------------------------------------
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # -------------------------------
 # Regional y shell
@@ -13,22 +13,23 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
-ENV PATH="${PATH}:/home/vscode/.local/bin"
+# /opt/venv = entorno Python aislado (Ubuntu 24.04 aplica PEP 668 y bloquea pip a nivel sistema).
+ENV PATH="/opt/venv/bin:${PATH}:/home/vscode/.local/bin"
 
 # -------------------------------
-# Versiones configurables
+# Versiones configurables (últimas estables a 2026-06)
 # -------------------------------
-ARG TERRAFORM_VERSION=1.11.4
+ARG TERRAFORM_VERSION=1.15.6
 ARG KUBECTL_INSTALL=false
-ARG ANSIBLE_CORE_VERSION=2.16.5
-ARG ANSIBLE_VERSION=9.4.0
+ARG ANSIBLE_CORE_VERSION=2.21.1
+ARG ANSIBLE_VERSION=14.0.0
 
 # -------------------------------
 # Paquetes base del sistema
 # -------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl unzip git jq gnupg software-properties-common \
-      direnv bash-completion python3 python3-pip less tree sudo \
+      direnv bash-completion python3 python3-pip python3-venv less tree sudo \
       iputils-ping dnsutils netcat-openbsd locales \
     && locale-gen en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
@@ -62,10 +63,11 @@ RUN curl -fsSL https://raw.githubusercontent.com/terraform-linters/tflint/master
     tflint --version
 
 # -------------------------------
-# Ansible + librerías Python para AWS
+# Ansible + librerías Python para AWS (en un venv aislado)
 # -------------------------------
-RUN pip3 install --no-cache-dir --upgrade pip setuptools && \
-    pip3 install --no-cache-dir \
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    /opt/venv/bin/pip install --no-cache-dir \
       ansible-core==${ANSIBLE_CORE_VERSION} \
       ansible==${ANSIBLE_VERSION} \
       boto3 botocore jmespath \
@@ -79,8 +81,11 @@ RUN echo 'eval "$(direnv hook bash)"' >> /etc/bash.bashrc
 
 # -------------------------------
 # Usuario vscode sin prompt de sudo
+# (Ubuntu 24.04 trae un usuario 'ubuntu' en UID/GID 1000: lo eliminamos antes.)
 # -------------------------------
-RUN groupadd -g 1000 vscode && \
+RUN (userdel -r ubuntu 2>/dev/null || true) && \
+    (groupdel ubuntu 2>/dev/null || true) && \
+    groupadd -g 1000 vscode && \
     useradd -m -u 1000 -g vscode -s /bin/bash vscode && \
     echo 'vscode ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/vscode && \
     chmod 0440 /etc/sudoers.d/vscode
