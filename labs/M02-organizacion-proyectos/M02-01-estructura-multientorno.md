@@ -47,7 +47,7 @@ variable "environment" {
 variable "aws_region" {
   type        = string
   description = "Región de AWS de referencia"
-  default     = "eu-west-1"
+  default     = "us-east-2"
 }
 ```
 
@@ -61,7 +61,7 @@ variable "aws_region" {
 ```hcl
 project     = "tfadv"
 environment = "dev"
-aws_region  = "eu-west-1"
+aws_region  = "us-east-2"
 ```
 
 **Por qué:** Aquí viven los valores **concretos** de dev, separados del código.

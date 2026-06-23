@@ -28,6 +28,20 @@ no en tu disco.
 > Al migrar, Terraform **sube tu estado local** a TFC. A partir de ahí, el estado de verdad vive en
 > TFC: no edites el `.tfstate` local (ya no manda).
 
+### Recuperar un estado anterior en Terraform Cloud
+
+TFC guarda **historial de versiones** del estado en cada workspace. Si un `apply` dejó la
+infraestructura en un estado indeseable:
+
+1. En la UI → workspace → **States** → elige una versión anterior → **Download** o **Restore**.
+2. Tras restaurar, ejecuta `terraform plan` desde tu entorno: debe mostrar cómo volver a la
+   realidad deseada (o `No changes` si ya coincide).
+3. Documenta en el PR qué versión restauraste y por qué.
+
+> [!TIP]
+> Restaurar el estado **no revierte** cambios ya hechos en AWS por sí solo: reconcilia lo que
+> Terraform *cree* que existe. Si hace falta, combina restauración con `apply` o import.
+
 ## Demostración guiada
 
 > Recorrido del formador. El backend es TFC; el `apply` toca AWS (🔴): hazlo en la sesión.
@@ -40,6 +54,8 @@ no en tu disco.
    variables de entorno sensibles.
 4. **Locking en acción.** Se lanza un `apply` y, en paralelo, se intenta otro: el segundo espera
    por el lock. Ahí se ve el valor del estado remoto.
+5. **Historial de estados.** Se muestra cómo descargar o restaurar una versión anterior del estado
+   desde la pestaña **States** del workspace.
 
 ## Ahora practica tú
 

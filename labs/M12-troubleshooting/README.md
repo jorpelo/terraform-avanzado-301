@@ -11,6 +11,7 @@
 - Un **método** para diagnosticar errores de Terraform en vez de ir a ciegas.
 - Interpretar mensajes de error y activar el log detallado con `TF_LOG`.
 - Resolver incidencias típicas: dependencias circulares, drift, estado, variables.
+- **Recuperar** un estado anterior (local backup o historial de TFC).
 
 ## Teoría
 
@@ -30,6 +31,7 @@ de Terraform dicen el recurso, el atributo y a menudo la causa.
 | Recurso inconsistente | `Provider produced inconsistent result` |
 | Estado/lock | `Error acquiring the state lock` |
 | Variable incorrecta | `Invalid value for variable` |
+| Estado corrupto / apply erróneo | Restaurar `.tfstate.backup` o versión en TFC **States** |
 
 > [!WARNING]
 > `TF_LOG=DEBUG` es muy verboso y puede incluir datos sensibles. Úsalo para diagnosticar y

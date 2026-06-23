@@ -10,7 +10,11 @@ Inspeccionar el estado y **renombrar un recurso con `state mv`** sin que Terrafo
 
 ### Prerrequisitos
 
-- Dev container (M01) y credenciales activas (ventana AWS).
+- Dev container (M01), credenciales activas (ventana AWS) y región **us-east-2**.
+
+> [!TIP]
+> Sustituye `TU-USUARIO` por tu `AWS_LAB_USER` (p. ej. `david.pestana`). Los buckets deben
+> empezar por `curso-<usuario>-`.
 
 ### En qué consiste
 
@@ -23,7 +27,7 @@ Aplicas un recurso mínimo, lo inspeccionas, lo renombras en el código y reconc
 
 ```hcl
 resource "aws_s3_bucket" "data" {
-  bucket = "tfadv-dev-state-demo-eu-west-1"
+  bucket = "curso-TU-USUARIO-state-demo"
 }
 ```
 
@@ -54,7 +58,7 @@ terraform state show aws_s3_bucket.data
 
 ```hcl
 resource "aws_s3_bucket" "primary" {
-  bucket = "tfadv-dev-state-demo-eu-west-1"
+  bucket = "curso-TU-USUARIO-state-demo"
 }
 ```
 

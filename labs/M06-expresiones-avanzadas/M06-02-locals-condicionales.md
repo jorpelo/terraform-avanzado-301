@@ -1,6 +1,6 @@
 # M06-02 — locals, condicionales y funciones
 
-[← Página anterior](M06-01-count-for-each.md) · [Siguiente página →](../M07-gestion-estado/README.md)
+[← Página anterior](M06-02-locals-condicionales.md) · [Siguiente página →](M06-03-hcl-avanzado.md)
 
 > Práctica del módulo. La teoría y la demo están en el [README del módulo](README.md).
 

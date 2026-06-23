@@ -4,13 +4,13 @@
 
 > [!NOTE]
 > **Cómo funciona este módulo.** Primero la **teoría**, luego la **demostración guiada** del
-> formador, y después **practicas tú** en los laboratorios (este módulo tiene dos).
+> formador, y después **practicas tú** en los laboratorios (este módulo tiene tres).
 
 ## Qué aprenderás
 
 - Aplicar CI/CD a Terraform: validar en cada PR y desplegar de forma controlada.
 - Separar **plan** (en el PR) de **apply** (en el merge, con aprobación).
-- Manejar variables y secretos en pipelines.
+- Estimar el **coste** de un cambio con Infracost en el PR.
 
 ## Teoría
 
@@ -46,5 +46,6 @@ repo. Un **environment** con *required reviewers* añade la puerta de aprobació
 |-----|--------|-----------|
 | M10-01 | [Validación y plan en el PR](M10-01-validacion-plan-pr.md) | Workflow que corre `fmt`, `validate` y `plan` en cada Pull Request |
 | M10-02 | [Apply con aprobación](M10-02-apply-aprobacion.md) | Workflow de `apply` en merge, protegido por un environment con revisor |
+| M10-03 | [Infracost en el PR](M10-03-infracost-pr.md) | Publicar estimación de coste en cada Pull Request |
 
 → Empieza por **[M10-01 — Validación y plan en el PR](M10-01-validacion-plan-pr.md)**.

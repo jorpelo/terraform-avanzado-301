@@ -37,8 +37,8 @@ Un rol de IAM tiene dos caras que conviene no confundir:
 
 > Recorrido del formador. Crea IAM real (🔴 AWS): hazlo en la sesión.
 
-1. **Proveedor OIDC y rol.** Se da de alta el proveedor OIDC de GitHub en IAM y se crea un rol con
-   una **trust policy** que solo confía en `repo:tu-org/tu-repo:ref:refs/heads/main`.
+1. **Proveedor OIDC y rol pre-creados.** El OIDC de GitHub ya existe en la cuenta; cada alumno tiene
+   un rol `lab-ci-<usuario>` con trust policy hacia su fork.
 2. **Workflow sin claves.** El workflow usa `aws-actions/configure-aws-credentials` con
    `role-to-assume` y `permissions: id-token: write`; ya no hay `AWS_ACCESS_KEY_ID`.
 3. **Mínimo privilegio.** Se parte de una **permission policy** mínima y se observa cómo un `apply`
@@ -48,7 +48,7 @@ Un rol de IAM tiene dos caras que conviene no confundir:
 
 | Lab | Título | Qué harás |
 |-----|--------|-----------|
-| M11-01 | [OIDC GitHub ↔ AWS](M11-01-oidc.md) | Configurar OIDC y que el pipeline asuma un rol sin claves estáticas |
+| M11-01 | [OIDC GitHub ↔ AWS](M11-01-oidc.md) | Usar el rol `lab-ci-<usuario>` pre-creado y quitar claves estáticas del pipeline |
 | M11-02 | [Mínimo privilegio](M11-02-minimo-privilegio.md) | Ajustar la permission policy del rol al mínimo necesario |
 
 → Empieza por **[M11-01 — OIDC GitHub ↔ AWS](M11-01-oidc.md)**.

@@ -6,64 +6,54 @@
 
 ### Objetivo
 
-Configurar OIDC para que GitHub Actions asuma un rol de AWS **sin** claves estáticas, y migrar el
-workflow de M10 a este método.
+Conectar GitHub Actions con AWS vía **OIDC** usando el proveedor y el rol **pre-creados** del curso,
+y migrar el workflow de M10 para operar **sin claves estáticas**.
 
 ### Prerrequisitos
 
-- El pipeline de M10 funcionando y credenciales activas (ventana AWS) para crear IAM.
+- El pipeline de M10 funcionando.
+- Tu identificador de alumno (`AWS_LAB_USER`, p. ej. `david.pestana`).
 
 ### En qué consiste
 
-Creas el proveedor OIDC, un rol con trust policy hacia tu repo, y cambias el workflow para asumirlo.
+Verificas el OIDC ya existente en la cuenta, localizas tu rol `lab-ci-<usuario>`, ajustas la trust
+policy si hace falta y cambias el workflow para asumir ese rol.
 
-### 1 — Da de alta el proveedor OIDC de GitHub
+> [!IMPORTANT]
+> En este curso **no creas** el proveedor OIDC de GitHub: ya está en la cuenta compartida. Tu rol
+> CI es `lab-ci-<AWS_LAB_USER>` (p. ej. `lab-ci-david.pestana`).
 
-**Acción:** Define en Terraform (o consola) el proveedor OIDC de GitHub:
-
-```hcl
-resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
-}
-```
-
-**Por qué:** AWS necesita confiar en el emisor de tokens de GitHub.
-**Resultado esperado:** El proveedor OIDC existe en IAM.
-
-### 2 — Crea el rol con trust policy hacia tu repo
+### 1 — Localiza tu rol CI
 
 **Acción:**
 
-```hcl
-data "aws_iam_policy_document" "trust" {
-  statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    principals {
-      type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:TU-ORG/terraform-avanzado-301:ref:refs/heads/main"]
-    }
-  }
-}
-
-resource "aws_iam_role" "ci" {
-  name               = "tfadv-ci"
-  assume_role_policy = data.aws_iam_policy_document.trust.json
-}
+```bash
+source scripts/load-env.sh
+aws --profile lab iam get-role --role-name lab-ci-${AWS_LAB_USER}
 ```
 
-**Por qué:** Solo tu repo (y rama `main`) podrá asumir el rol.
-**Resultado esperado:** Existe el rol `tfadv-ci` con su trust policy.
+**Por qué:** Confirmas que existe el rol asignado a tu usuario y revisas su trust policy.
+**Resultado esperado:** El rol existe; en `AssumeRolePolicyDocument` aparece el proveedor OIDC de
+GitHub y una condición sobre tu repositorio.
+
+### 2 — Revisa la trust policy (solo lectura + ajuste acotado)
+
+**Acción:** Inspecciona el `sub` permitido. Debe parecerse a:
+
+```
+repo:TU-USUARIO/terraform-avanzado-301:ref:refs/heads/main
+```
+
+Si tu fork vive bajo tu usuario de GitHub, la condición debe apuntar a **tu fork**, no al repo
+original del formador. Si el `sub` no coincide, pide al formador que lo ajuste o amplíe el patrón
+(p. ej. `repo:TU-USUARIO/*`).
+
+**Por qué:** OIDC falla en silencio si el token de GitHub no encaja con la trust policy.
+**Resultado esperado:** Entiendes qué repo/rama/environment puede asumir el rol.
 
 ### 3 — Cambia el workflow para asumir el rol
 
-**Acción:** En el workflow de apply, sustituye las claves por OIDC:
+**Acción:** En el workflow de apply (M10-02), sustituye las claves por OIDC:
 
 ```yaml
 permissions:
@@ -77,24 +67,27 @@ jobs:
       - uses: actions/checkout@v4
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/tfadv-ci
-          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::800789335147:role/lab-ci-TU-USUARIO
+          aws-region: us-east-2
       - uses: hashicorp/setup-terraform@v3
       - run: terraform init
       - run: terraform apply -auto-approve
 ```
+
+Sustituye `TU-USUARIO` por tu `AWS_LAB_USER`.
 
 **Por qué:** El job obtiene credenciales temporales asumiendo el rol; ya no hay claves en Secrets.
 **Resultado esperado:** El workflow ya no usa `AWS_ACCESS_KEY_ID`.
 
 ### 4 — Verifica que el pipeline funciona sin claves
 
-**Acción:** Borra los secretos `AWS_ACCESS_KEY_ID`/`SECRET` del repo y dispara el workflow.
+**Acción:** Elimina los secretos `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` del repo (conserva
+`AWS_REGION=us-east-2` si otros jobs lo necesitan) y dispara el workflow.
 **Por qué:** Confirmas que ya no dependes de claves estáticas.
-**Resultado esperado:** El `apply` corre asumiendo el rol; en los logs ves `Assuming role`.
+**Resultado esperado:** El `apply` corre asumiendo `lab-ci-<usuario>`; en los logs ves `Assuming role`.
 
 > [!WARNING]
-> Crea IAM real. Hazlo en la ventana y limpia los roles de prueba al terminar.
+> Operaciones IAM reales. Hazlo en la ventana de clase.
 
 ## Comprueba tu entendimiento
 
@@ -103,8 +96,8 @@ Revisa los Secrets del repo.
 → Ya no hay `AWS_ACCESS_KEY_ID`; el pipeline sigue funcionando.
 
 **Confianza acotada**
-Mira la trust policy del rol.
-→ Solo confía en tu `repo:...:ref:refs/heads/main`.
+Mira la trust policy del rol `lab-ci-<usuario>`.
+→ Solo confía en tu repo (y rama/environment definidos).
 
 ## Reto
 
@@ -115,8 +108,9 @@ Mira la trust policy del rol.
 <details>
 <summary>Ver solución</summary>
 
-En la condición del `sub` usa `repo:TU-ORG/REPO:environment:production` en lugar de
-`ref:refs/heads/main`. Así el token solo es válido cuando el job corre en ese environment protegido.
+En la condición del `sub` usa `repo:TU-USUARIO/terraform-avanzado-301:environment:production` en
+lugar de `ref:refs/heads/main`. Así el token solo es válido cuando el job corre en ese environment
+protegido.
 
 </details>
 
@@ -124,7 +118,8 @@ En la condición del `sub` usa `repo:TU-ORG/REPO:environment:production` en luga
 
 | Síntoma | Causa probable | Cómo arreglarlo |
 |---------|----------------|-----------------|
-| `Not authorized to perform sts:AssumeRoleWithWebIdentity` | Trust policy no casa con tu `sub` | Revisa org/repo/ref exactos en la condición |
+| `Not authorized to perform sts:AssumeRoleWithWebIdentity` | Trust policy no casa con tu `sub` | Revisa org/repo/ref exactos del fork |
 | `Credentials could not be loaded` | Falta `permissions: id-token: write` | Añádelo al workflow |
-| El thumbprint es rechazado | Cambió el del emisor | Usa el data source de OIDC o el thumbprint vigente |
+| Rol no encontrado | Nombre distinto de `lab-ci-<AWS_LAB_USER>` | Confirma `AWS_LAB_USER` con el formador |
+| Recursos denegados tras OIDC | Región distinta de `us-east-2` | `aws-region: us-east-2` en el workflow |
 | Acceso AWS falla | Fuera de la ventana | Reintenta en sesión |

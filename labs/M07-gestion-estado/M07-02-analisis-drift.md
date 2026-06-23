@@ -23,7 +23,7 @@ Creas un bucket con una etiqueta, la cambias a mano en la consola y observas có
 
 ```hcl
 resource "aws_s3_bucket" "demo" {
-  bucket = "tfadv-dev-drift-demo-eu-west-1"
+  bucket = "curso-TU-USUARIO-drift-demo"
   tags = {
     Owner = "terraform"
   }

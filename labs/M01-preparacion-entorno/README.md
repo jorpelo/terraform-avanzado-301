@@ -22,9 +22,10 @@ El curso separa dos cosas a propósito:
 
 | Vía | Cuándo | Cómo |
 |-----|--------|------|
-| **Codespaces secrets** | Trabajas en Codespaces | Settings → Codespaces → Secrets. Llegan como variables de entorno. |
-| **`.env` local + direnv** | Trabajas en local con Docker | `cp .env.example .env`, lo editas y `direnv allow`. |
-| **Asunción de rol** *(opcional)* | Te dan un rol que asumir | Defines `AWS_ROLE_ARN`; el setup crea un perfil `lab`. |
+| **Codespaces secrets** | Trabajas en Codespaces | Settings → Codespaces → Secrets (`AWS_*`, `AWS_ROLE_ARN`, `AWS_LAB_USER`). Rebuild al añadir. |
+| **`.env` + `load-env.sh`** | Codespaces o local | `cp .env.example .env`, edítalo y `source scripts/load-env.sh`. |
+| **`.env` + direnv** | Local con Docker | `cp .env.example .env`, edítalo y `direnv allow`. |
+| **Asunción de rol** | Siempre en este curso | Keys del usuario + `AWS_ROLE_ARN=.../lab-role-curso`; operas con `aws --profile lab`. |
 
 | Pieza | Para qué sirve |
 |-------|----------------|
@@ -50,8 +51,9 @@ El curso separa dos cosas a propósito:
    (*Reopen in Container*). Al terminar la construcción, el `postCreateCommand` ejecuta
    `setup-aws-profiles.sh`, que imprime un "panel de bienvenida": herramientas detectadas, si hay
    credenciales activas y, si no, las vías para ponerlas.
-3. **Credenciales.** Se muestran las tres vías (secrets de Codespaces, `.env` + direnv, rol) y se
-   elige una. Tras inyectarlas, `aws sts get-caller-identity` confirma la identidad.
+3. **Credenciales y rol.** Se cargan keys + `AWS_ROLE_ARN` (rol `lab-role-curso`) y región
+   `us-east-2`. Tras `source scripts/load-env.sh`, `aws --profile lab sts get-caller-identity`
+   debe mostrar el rol asumido.
 4. **Verificación de permisos.** Se lanza `./scripts/check-aws-permissions.sh`, que comprueba —sin
    riesgo— que la cuenta puede hacer todo lo que pedirán los labs (S3, IAM/STS, EC2/VPC).
 

@@ -60,7 +60,7 @@ output "bucket_arn" { value = aws_s3_bucket.this.arn }
 ```hcl
 module "bucket" {
   source      = "../../modules/s3"
-  bucket_name = "${module.naming.prefix}-data-${var.aws_region}"
+  bucket_name = "curso-${var.lab_user}-data-${var.aws_region}"
   tags        = module.tags.tags
 }
 
@@ -104,7 +104,7 @@ terraform destroy
 
 **Composición correcta**
 Ejecuta `terraform plan`.
-→ El nombre del bucket incluye el prefijo `tfadv-dev` y lleva las etiquetas comunes.
+→ El nombre del bucket incluye el prefijo `curso-<usuario>-` y lleva las etiquetas comunes.
 
 **Versionado parametrizable**
 Cambia `versioning = false` al consumir el módulo y vuelve a `plan`.

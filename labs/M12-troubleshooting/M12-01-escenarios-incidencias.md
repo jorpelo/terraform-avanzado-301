@@ -23,10 +23,10 @@ Reproduces cada escenario, lees el error y lo corriges.
 
 ```hcl
 resource "aws_s3_bucket" "a" {
-  bucket = "tfadv-cycle-a-${aws_s3_bucket.b.id}"
+  bucket = "curso-${var.lab_user}-cycle-a-${aws_s3_bucket.b.id}"
 }
 resource "aws_s3_bucket" "b" {
-  bucket = "tfadv-cycle-b-${aws_s3_bucket.a.id}"
+  bucket = "curso-${var.lab_user}-cycle-b-${aws_s3_bucket.a.id}"
 }
 ```
 
@@ -72,6 +72,26 @@ unset TF_LOG
 
 **Por qué:** El log detallado muestra la petición al provider que está fallando.
 **Resultado esperado:** Localizas la causa en `debug.log` y apagas el log al terminar.
+
+### 5 — Recuperar estado desde backup local
+
+**Acción:** Tras un `apply` en un entorno de prueba, copia el backup que Terraform genera:
+
+```bash
+cp terraform.tfstate terraform.tfstate.roto   # simula corrupción
+cp terraform.tfstate.backup terraform.tfstate # restaura
+terraform plan
+```
+
+**Por qué:** Practica la recuperación sin depender de TFC.
+**Resultado esperado:** `plan` vuelve a ser coherente con el backup restaurado.
+
+### 6 — (Opcional) Restaurar en Terraform Cloud
+
+**Acción:** Si usas TFC (M08), en la UI del workspace → **States** → elige una versión anterior →
+**Restore**. Luego `terraform plan` desde tu máquina.
+**Por qué:** Es el camino habitual en equipo cuando un apply fue demasiado lejos.
+**Resultado esperado:** Entiendes la diferencia entre restaurar estado y deshacer cambios en AWS.
 
 ## Comprueba tu entendimiento
 

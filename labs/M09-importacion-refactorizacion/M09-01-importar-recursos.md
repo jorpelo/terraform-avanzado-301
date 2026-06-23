@@ -22,8 +22,9 @@ Creas un recurso fuera de Terraform, escribes su código, lo importas al estado 
 **Acción:**
 
 ```bash
-aws s3api create-bucket --bucket tfadv-dev-import-demo-eu-west-1 \
-  --create-bucket-configuration LocationConstraint=eu-west-1
+aws --profile lab s3api create-bucket --bucket curso-${AWS_LAB_USER}-import-demo \
+  --region us-east-2 \
+  --create-bucket-configuration LocationConstraint=us-east-2
 ```
 
 **Por qué:** Simulas un recurso preexistente que aún no conoce Terraform.
@@ -35,7 +36,7 @@ aws s3api create-bucket --bucket tfadv-dev-import-demo-eu-west-1 \
 
 ```hcl
 resource "aws_s3_bucket" "imported" {
-  bucket = "tfadv-dev-import-demo-eu-west-1"
+  bucket = "curso-TU-USUARIO-import-demo"
 }
 ```
 
@@ -49,7 +50,7 @@ resource "aws_s3_bucket" "imported" {
 ```bash
 cd labs-sandbox/m09
 terraform init
-terraform import aws_s3_bucket.imported tfadv-dev-import-demo-eu-west-1
+terraform import aws_s3_bucket.imported curso-TU-USUARIO-import-demo
 ```
 
 **Por qué:** Vinculas el recurso real con la dirección del código en el estado.

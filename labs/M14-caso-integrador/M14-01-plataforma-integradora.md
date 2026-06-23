@@ -18,6 +18,16 @@ módulos versionados, estado en TFC, pipeline con aprobación, OIDC e integraci�
 Trabajas por incrementos (un PR por bloque), validando con el pipeline en cada paso, hasta tener la
 plataforma funcionando de punta a punta.
 
+### Checklist de entrega (DoD)
+
+- [ ] Región AWS `us-east-2`; recursos con prefijo `curso-<AWS_LAB_USER>-*`
+- [ ] `terraform fmt -check`, `validate` y `tflint` en CI
+- [ ] Workspaces TFC por entorno; historial de estados accesible
+- [ ] PR con `plan`; merge con `apply` + aprobación manual
+- [ ] OIDC con rol `lab-ci-<usuario>` (sin claves estáticas)
+- [ ] (Opcional) Infracost comentando coste en PR
+- [ ] `destroy` ejecutado al cerrar la práctica
+
 ### 1 — Estructura y módulos
 
 **Acción:** Parte de `environments/{dev,prod}` y consume los módulos `naming`, `tagging` y `s3`

@@ -28,8 +28,20 @@ nombres, número de recursos), que viven en archivos `*.tfvars` separados.
 > **No confundas declarar con asignar.** `variables.tf` declara que existe una variable
 > `environment`; `terraform.tfvars` le da el valor `"dev"`. Lo primero es la forma; lo segundo, el contenido.
 
-Una convención de **nomenclatura** consistente (p. ej. `proyecto-entorno-recurso`) evita choques
-de nombres entre entornos y hace el inventario legible.
+Una convención de **nomenclatura** consistente (p. ej. `curso-<usuario>-<recurso>` en AWS y
+`proyecto-entorno` en variables internas) evita choques entre alumnos y hace el inventario legible.
+
+### Definition of Done (DoD) de un cambio IaC
+
+Antes de mergear un PR de infraestructura, comprueba:
+
+- [ ] `terraform fmt -check` y `validate` en verde
+- [ ] `plan` revisado (qué crea/modifica/destruye)
+- [ ] Nombres AWS con prefijo `curso-<tu-usuario>-*`
+- [ ] Región `us-east-2` (salvo indicación contraria)
+- [ ] Tags mínimas (`Environment`, `ManagedBy`, etc.)
+- [ ] Sin secretos en el código; credenciales fuera del repo
+- [ ] Recursos efímeros de lab: `destroy` al terminar la sesión
 
 ## Demostración guiada
 

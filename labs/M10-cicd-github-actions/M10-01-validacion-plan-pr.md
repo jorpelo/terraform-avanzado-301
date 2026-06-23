@@ -37,7 +37,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: us-east-2
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
@@ -53,7 +53,7 @@ jobs:
 ### 2 — Configura los secretos
 
 **Acción:** En GitHub → tu repo → **Settings → Secrets and variables → Actions**, añade
-`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_REGION`.
+`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_REGION=us-east-2`.
 **Por qué:** El `plan` necesita credenciales, pero no deben estar en el código.
 **Resultado esperado:** Los secretos existen a nivel de repositorio.
 

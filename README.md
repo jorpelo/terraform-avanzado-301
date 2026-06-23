@@ -60,11 +60,11 @@ Las **credenciales** las pones tú (aprenderás varias vías en M01): *secrets* 
 | M03 | Git aplicado a IaC | 1 | [labs/M03-git-iac/](labs/M03-git-iac/README.md) |
 | M04 | Módulos reutilizables | 2 | [labs/M04-modulos-reutilizables/](labs/M04-modulos-reutilizables/README.md) |
 | M05 | Versionado y distribución de módulos | 1 | [labs/M05-versionado-modulos/](labs/M05-versionado-modulos/README.md) |
-| M06 | Expresiones avanzadas | 2 | [labs/M06-expresiones-avanzadas/](labs/M06-expresiones-avanzadas/README.md) |
+| M06 | Expresiones avanzadas | 3 | [labs/M06-expresiones-avanzadas/](labs/M06-expresiones-avanzadas/README.md) |
 | M07 | Gestión avanzada del estado | 2 | [labs/M07-gestion-estado/](labs/M07-gestion-estado/README.md) |
 | M08 | Terraform Cloud y estados remotos | 1 | [labs/M08-terraform-cloud/](labs/M08-terraform-cloud/README.md) |
 | M09 | Importación y refactorización | 2 | [labs/M09-importacion-refactorizacion/](labs/M09-importacion-refactorizacion/README.md) |
-| M10 | CI/CD con GitHub Actions | 2 | [labs/M10-cicd-github-actions/](labs/M10-cicd-github-actions/README.md) |
+| M10 | CI/CD con GitHub Actions | 3 | [labs/M10-cicd-github-actions/](labs/M10-cicd-github-actions/README.md) |
 | M11 | Seguridad y gestión de secretos | 2 | [labs/M11-seguridad-secretos/](labs/M11-seguridad-secretos/README.md) |
 | M12 | Troubleshooting y recuperación | 1 | [labs/M12-troubleshooting/](labs/M12-troubleshooting/README.md) |
 | M13 | Terraform + Ansible | 2 | [labs/M13-terraform-ansible/](labs/M13-terraform-ansible/README.md) |

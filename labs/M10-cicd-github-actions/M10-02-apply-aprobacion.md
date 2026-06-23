@@ -1,6 +1,6 @@
 # M10-02 — Apply con aprobación
 
-[← Página anterior](M10-01-validacion-plan-pr.md) · [Siguiente página →](../M11-seguridad-secretos/README.md)
+[← Página anterior](M10-01-validacion-plan-pr.md) · [Siguiente página →](M10-03-infracost-pr.md)
 
 > Práctica del módulo. La teoría y la demo están en el [README del módulo](README.md).
 
@@ -45,7 +45,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: us-east-2
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3

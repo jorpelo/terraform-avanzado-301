@@ -38,8 +38,9 @@ Este módulo no introduce conceptos nuevos: **conecta** los anteriores. El repos
    `.github/workflows/`, y cómo se relacionan.
 2. **Flujo de un cambio.** Se sigue un cambio real: rama → PR (plan automático) → revisión → merge →
    apply con aprobación, todo con OIDC.
-3. **Criterios de calidad.** Se señalan los puntos que se evaluarán: módulos versionados, estado en
-   TFC, pipeline verde, sin claves estáticas.
+3. **Criterios de calidad.** Checklist de entrega: módulos versionados, estado en TFC, pipeline
+   verde, OIDC sin claves, región `us-east-2`, prefijos `curso-<usuario>-*`, `tflint` y (opcional)
+   comentario Infracost en PR.
 
 ## Ahora construye tú
 

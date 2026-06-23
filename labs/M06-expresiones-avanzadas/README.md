@@ -4,13 +4,13 @@
 
 > [!NOTE]
 > **Cómo funciona este módulo.** Primero la **teoría**, luego la **demostración guiada** del
-> formador, y después **practicas tú** en los laboratorios (este módulo tiene dos).
+> formador, y después **practicas tú** en los laboratorios (este módulo tiene tres).
 
 ## Qué aprenderás
 
 - Generar infraestructura dinámica con `count` y `for_each`.
 - Usar `locals`, expresiones condicionales y funciones integradas.
-- Manipular mapas y listas para parametrizar recursos.
+- Usar bloques **`dynamic`**, **`try`** y **`lifecycle.precondition`** para HCL más expresivo.
 
 ## Teoría
 
@@ -45,5 +45,6 @@
 |-----|--------|-----------|
 | M06-01 | [count y for_each](M06-01-count-for-each.md) | Generar recursos con `for_each` sobre un mapa y un recurso condicional con `count` |
 | M06-02 | [locals, condicionales y funciones](M06-02-locals-condicionales.md) | Parametrizar con `locals`, `for` con condición y funciones de manipulación |
+| M06-03 | [HCL avanzado](M06-03-hcl-avanzado.md) | `dynamic`, `try` y preconditions para entradas seguras |
 
 → Empieza por **[M06-01 — count y for_each](M06-01-count-for-each.md)**.

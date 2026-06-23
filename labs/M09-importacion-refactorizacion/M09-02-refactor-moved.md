@@ -24,7 +24,7 @@ otro `moved`.
 
 ```hcl
 resource "aws_s3_bucket" "old_name" {
-  bucket = "tfadv-dev-moved-demo-eu-west-1"
+  bucket = "curso-TU-USUARIO-moved-demo"
 }
 ```
 
@@ -43,7 +43,7 @@ terraform apply
 
 ```hcl
 resource "aws_s3_bucket" "new_name" {
-  bucket = "tfadv-dev-moved-demo-eu-west-1"
+  bucket = "curso-TU-USUARIO-moved-demo"
 }
 
 moved {
