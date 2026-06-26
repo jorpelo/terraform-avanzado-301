@@ -18,9 +18,9 @@ output "name_prefix" { value = module.naming.prefix }
 output "common_tags" { value = module.tags.tags }
 
 module "bucket" {
-  source      = "../../modules/s3"
-  bucket_name = "curso-${var.lab_user}-data-${var.aws_region}"
-  tags        = module.tags.tags
+  source      = "git::https://github.com/jorpelo/terraform-avanzado-301.git//modules/s3?ref=v1.0.0"
+  bucket_name = "${var.project}-${var.environment}-data"
+  tags        = { ManagedBy = "terraform" }
 }
 
 output "bucket_id" { value = module.bucket.bucket_id }

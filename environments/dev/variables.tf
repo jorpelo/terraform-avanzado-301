@@ -18,3 +18,9 @@ variable "lab_user" {
   type        = string
   description = "Nombre del usuario del laboratorio"
 }
+
+variable "force_destroy" {
+  type        = bool
+  description = "Forzar destrucción de recursos"
+  default     = false
+}
