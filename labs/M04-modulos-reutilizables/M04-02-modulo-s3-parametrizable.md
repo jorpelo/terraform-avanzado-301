@@ -88,79 +88,17 @@ terraform plan
 **Acción:**
 
 ```bash
-terraform apply -auto-approve -refresh=false
-# Comprueba que el bucket existe (sustituye <usuario> por tu lab_user):
-aws s3api head-bucket --bucket curso-<usuario>-data-us-east-2
-terraform destroy -auto-approve -refresh=false
+terraform apply
+# ... revisa el bucket ...
+terraform destroy
 ```
 
-**Por qué:** Si quieres verlo real, créalo y elimínalo en la misma sesión. El flag `-refresh=false`
-evita lecturas S3 que el rol del laboratorio no tiene (ver sección siguiente).
+**Por qué:** Si quieres verlo real, créalo y elimínalo en la misma sesión.
 **Resultado esperado:** El bucket se crea y luego se destruye.
 
 > [!WARNING]
 > Este paso crea un recurso real en AWS. Hazlo dentro de la ventana de clase y **destruye al
 > terminar**. Si solo practicas el diseño, quédate en `plan`.
-
-### Permisos del rol del laboratorio
-
-En el curso no trabajas con acceso administrador a AWS. Operas a través de una **capa de permisos
-restringida**: asumes el rol `LabRole-curso` (perfil `lab`), diseñado con **mínimo privilegio** para
-que solo puedas crear y borrar recursos propios del curso (prefijo `curso-<usuario>-*` en
-**us-east-2**).
-
-Eso implica una diferencia importante entre **lo que Terraform necesita leer** y **lo que el rol
-puede leer**:
-
-| Capa | Qué ocurre |
-|------|------------|
-| **Tu código** | Correcto: define bucket, versionado y tags. |
-| **Rol del lab** | Permite crear, etiquetar, versionar y borrar buckets del curso. |
-| **Provider AWS 5.x** | Antes de `apply`/`destroy`, intenta **refrescar** el estado leyendo muchas APIs del bucket (website, CORS, lifecycle…). |
-| **Conflicto** | El rol **no** incluye lecturas como `s3:GetBucketWebsite` → **403 AccessDenied**, aunque el bucket exista. |
-
-**No es un error tuyo.** El bucket se creó bien; falla la fase de *refresh* porque el provider pide
-más permisos de lectura de los que la capa de seguridad del laboratorio concede.
-
-El tester del curso (`./scripts/check-aws-permissions.sh`) valida las operaciones que sí necesitas
-para los labs:
-
-| Acción | ¿Disponible en el rol? |
-|--------|------------------------|
-| `s3:CreateBucket` | Sí |
-| `s3:DeleteBucket` | Sí |
-| `s3:PutBucketVersioning` / `s3:GetBucketVersioning` | Sí |
-| `s3:PutObject` / `s3:ListBucket` | Sí |
-| `s3:PutBucketTagging` / `s3:GetBucketTagging` | Sí |
-| `s3:GetBucketWebsite` y otras lecturas al refrescar | **No** (por diseño del entorno) |
-
-**Solución en este lab:** evita el refresh y confía en el estado local con `-refresh=false`:
-
-```bash
-terraform apply -auto-approve -refresh=false
-terraform destroy -auto-approve -refresh=false
-```
-
-Así Terraform aplica o destruye usando el estado que ya tiene, sin llamar a APIs de lectura que el
-rol no autoriza.
-
-Si el `destroy` falla por el versionado, destruye en dos pasos:
-
-```bash
-terraform destroy -auto-approve -refresh=false -target=module.bucket.aws_s3_bucket_versioning.this
-terraform destroy -auto-approve -refresh=false -target=module.bucket.aws_s3_bucket.this
-```
-
-**Comprobar que el bucket existe** (comandos sueltos, sustituye `<usuario>` por tu `lab_user`):
-
-```bash
-aws s3api head-bucket --bucket curso-<usuario>-data-us-east-2
-aws s3 ls | grep curso-<usuario>
-```
-
-- Sin error → el bucket existe.
-- `404` / `NoSuchBucket` → no existe (o ya se borró).
-- `403` en `head-bucket` → prueba `aws s3 ls`; a veces lista buckets aunque otras lecturas fallen.
 
 ## Comprueba tu entendimiento
 
@@ -191,8 +129,7 @@ consumidor obtiene cifrado sin conocer los detalles.
 
 | Síntoma | Causa probable | Cómo arreglarlo |
 |---------|----------------|-----------------|
-| `403 AccessDenied` en `s3:GetBucketWebsite` (u otra `GetBucket*`) | Capa de permisos del lab: el provider refresca el bucket con lecturas que el rol no tiene | No es fallo de tu código; usa `terraform destroy -auto-approve -refresh=false` (igual en `apply`) |
 | `BucketAlreadyExists` | Los nombres de bucket son globales en AWS | Añade sufijo único (región, cuenta o `random_id`) |
 | `Unsupported argument` | Input no declarado en el módulo | Revisa las `variable` del módulo |
-| El bucket queda tras la práctica | Olvidaste destruir | `terraform destroy -auto-approve -refresh=false` en `environments/dev` |
-| Acceso AWS falla | Fuera de la ventana o prefijo incorrecto | Reintenta en sesión; buckets `curso-<usuario>-*` en `us-east-2` |
+| El bucket queda tras la práctica | Olvidaste destruir | `terraform destroy` en `environments/dev` |
+| Acceso AWS falla | Fuera de la ventana | Reintenta en sesión (o quédate en `plan`) |

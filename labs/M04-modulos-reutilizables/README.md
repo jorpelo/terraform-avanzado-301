@@ -34,9 +34,6 @@ etiquetas, y ambos alimentan al de S3.
 ## Demostración guiada
 
 > Recorrido del formador. Diseño y `plan` son locales; el `apply` del bucket es opcional (🟡 AWS).
-> Por la **capa de permisos** del rol del lab (mínimo privilegio), `apply`/`destroy` deben ir con
-> `-refresh=false`: el provider AWS 5.x pide lecturas como `s3:GetBucketWebsite` que el rol no
-> concede.
 
 1. **De recurso suelto a módulo.** Se parte de un bucket "a mano" y se extrae a `modules/s3` con
    sus inputs/outputs, mostrando cómo se reduce la duplicación.
