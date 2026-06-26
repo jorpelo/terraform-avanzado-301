@@ -12,6 +12,8 @@ tagging. Diseño y `plan` son locales; el `apply` es opcional.
 ### Prerrequisitos
 
 - Haber hecho M04-01 (módulos `naming` y `tags` ya consumidos en `environments/dev`).
+- Tener definido tu identificador de alumno en el `.env` como `AWS_LAB_USER` (M01), p. ej.
+  `david.pestana`. Lo reutilizarás en Terraform como `lab_user`.
 
 ### En qué consiste
 
@@ -53,7 +55,34 @@ output "bucket_arn" { value = aws_s3_bucket.this.arn }
 **Por qué:** Encapsulas un bucket con versionado configurable, listo para reutilizar.
 **Resultado esperado:** El módulo expone `bucket_id` y `bucket_arn`.
 
-### 2 — Compón con naming y tagging
+### 2 — Declara la variable `lab_user`
+
+El nombre del bucket usa `var.lab_user`, pero esa variable **no viene de M02**: debes declararla
+ahora. Debe coincidir con `AWS_LAB_USER` de tu `.env` (M01): es el prefijo que exige el rol del
+laboratorio (`curso-<usuario>-*`).
+
+**Acción:** En `environments/dev/variables.tf`, añade:
+
+```hcl
+variable "lab_user" {
+  type        = string
+  description = "Identificador del alumno (mismo valor que AWS_LAB_USER del .env)"
+}
+```
+
+En `environments/dev/terraform.tfvars`, añade tu identificador:
+
+```hcl
+lab_user = "david.pestana"   # sustituye por tu AWS_LAB_USER
+```
+
+**Por qué:** Sin esta variable, `terraform validate`/`plan` fallan con
+`Reference to undeclared input variable "lab_user"`. Con un valor distinto de `AWS_LAB_USER`, el
+`apply` puede crear el bucket pero el rol no te dejará borrarlo o listarlo.
+**Resultado esperado:** `terraform validate` pasa y el plan muestra un nombre tipo
+`curso-david.pestana-data-us-east-2`.
+
+### 3 — Compón con naming y tagging
 
 **Acción:** En `environments/dev/main.tf`, añade:
 
@@ -70,7 +99,7 @@ output "bucket_id" { value = module.bucket.bucket_id }
 **Por qué:** El nombre y las etiquetas vienen de los otros módulos: composición real.
 **Resultado esperado:** El bucket usará un nombre coherente con la convención.
 
-### 3 — Inicializa y planifica
+### 4 — Inicializa y planifica
 
 **Acción:**
 
@@ -83,7 +112,7 @@ terraform plan
 **Por qué:** Compruebas qué se crearía sin aplicar todavía.
 **Resultado esperado:** `plan` propone crear el bucket con nombre y etiquetas correctos.
 
-### 4 — (Opcional) Aplica y destruye
+### 5 — (Opcional) Aplica y destruye
 
 **Acción:**
 
@@ -191,6 +220,8 @@ consumidor obtiene cifrado sin conocer los detalles.
 
 | Síntoma | Causa probable | Cómo arreglarlo |
 |---------|----------------|-----------------|
+| `Reference to undeclared input variable "lab_user"` | Usas `var.lab_user` en el bucket pero no la declaraste | Paso 2: añádela en `variables.tf` y en `terraform.tfvars` (mismo valor que `AWS_LAB_USER`) |
+| `403 AccessDenied` al crear o borrar el bucket | `lab_user` no coincide con `AWS_LAB_USER` del rol | Alinea ambos valores (p. ej. `david.pestana`) |
 | `403 AccessDenied` en `s3:GetBucketWebsite` (u otra `GetBucket*`) | Capa de permisos del lab: el provider refresca el bucket con lecturas que el rol no tiene | No es fallo de tu código; usa `terraform destroy -auto-approve -refresh=false` (igual en `apply`) |
 | `BucketAlreadyExists` | Los nombres de bucket son globales en AWS | Añade sufijo único (región, cuenta o `random_id`) |
 | `Unsupported argument` | Input no declarado en el módulo | Revisa las `variable` del módulo |
